@@ -1,48 +1,54 @@
 package com.example.gestion_proyectos.controller;
 
-import com.example.gestion_proyectos.model.Tarea;
-import com.example.gestion_proyectos.service.TareaService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import java.time.LocalDate;
 import java.util.Optional;
 
-@RestController
-@RequestMapping("/api/tareas")
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.example.gestion_proyectos.model.Proyecto;
+import com.example.gestion_proyectos.model.Tarea;
+import com.example.gestion_proyectos.repository.ProyectoRepository;
+import com.example.gestion_proyectos.repository.TareaRepository;
+
+@Controller
 public class TareaController {
 
     @Autowired
-    private TareaService tareaService;
+    private TareaRepository tareaRepository;
 
-    @GetMapping
-    public List<Tarea> listarTareas() {
-        return tareaService.obtenerTodas();
+    @Autowired
+    private ProyectoRepository proyectoRepository;
+
+    // Guardar una nueva tarea
+    @PostMapping("/tareas/guardar")
+    public String guardarTarea(@RequestParam Long proyectoId,
+                               @RequestParam String titulo,
+                               @RequestParam String descripcion,
+                               @RequestParam String fechaLimite,
+                               @RequestParam String estado) {
+
+        Optional<Proyecto> proyectoOptional = proyectoRepository.findById(proyectoId);
+        if (proyectoOptional.isPresent()) {
+            Proyecto proyecto = proyectoOptional.get();
+            Tarea tarea = new Tarea();
+            tarea.setTitulo(titulo);
+            tarea.setDescripcion(descripcion);
+            tarea.setFechaLimite(fechaLimite.isEmpty() ? null : LocalDate.parse(fechaLimite));
+            tarea.setEstado(Tarea.EstadoTarea.valueOf(estado));
+            tarea.setProyecto(proyecto);
+            tareaRepository.save(tarea);
+        }
+        return "redirect:/proyectos";
     }
 
-    @GetMapping("/proyecto/{proyectoId}")
-    public List<Tarea> listarTareasPorProyecto(@PathVariable Long proyectoId) {
-        return tareaService.obtenerPorProyecto(proyectoId);
-    }
-
-    @GetMapping("/{id}")
-    public Optional<Tarea> obtenerTarea(@PathVariable Long id) {
-        return tareaService.obtenerPorId(id);
-    }
-
-    @PostMapping
-    public Tarea crearTarea(@RequestBody Tarea tarea) {
-        return tareaService.guardar(tarea);
-    }
-
-    @PutMapping("/{id}")
-    public Tarea actualizarTarea(@PathVariable Long id, @RequestBody Tarea tarea) {
-        tarea.setId(id);
-        return tareaService.guardar(tarea);
-    }
-
-    @DeleteMapping("/{id}")
-    public void eliminarTarea(@PathVariable Long id) {
-        tareaService.eliminar(id);
+    // Eliminar tarea
+    @PostMapping("/tareas/eliminar/{id}")
+    public String eliminarTarea(@PathVariable Long id) {
+        tareaRepository.deleteById(id);
+        return "redirect:/proyectos";
     }
 }

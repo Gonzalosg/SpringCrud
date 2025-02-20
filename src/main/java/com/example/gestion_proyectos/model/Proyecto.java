@@ -1,6 +1,7 @@
 package com.example.gestion_proyectos.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -21,7 +22,7 @@ public class Proyecto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false)       
     private String nombre;
 
     private String descripcion;
@@ -33,62 +34,38 @@ public class Proyecto {
     private EstadoProyecto estado;
 
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Tarea> tareas;
+    private List<Tarea> tareas = new ArrayList<>();
 
-    //Constructor vacio
+
     public Proyecto() {
-    }
-
-    // Getters y setters
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public LocalDate getFechaInicio() {
-        return fechaInicio;
-    }
-
-    public void setFechaInicio(LocalDate fechaInicio) {
-        this.fechaInicio = fechaInicio;
-    }
-
-    public EstadoProyecto getEstado() {
-        return estado;
-    }
-
-    public void setEstado(EstadoProyecto estado) {
-        this.estado = estado;
+        this.tareas = new ArrayList<>();
     }
 
     public List<Tarea> getTareas() {
+        if (tareas == null) {
+            tareas = new ArrayList<>();
+        }
         return tareas;
     }
 
-    public void setTareas(List<Tarea> tareas) {
-        this.tareas = tareas;
-    }
+    // Getters y Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+
+    public LocalDate getFechaInicio() { return fechaInicio; }
+    public void setFechaInicio(LocalDate fechaInicio) { this.fechaInicio = fechaInicio; }
+
+    public EstadoProyecto getEstado() { return estado; }
+    public void setEstado(EstadoProyecto estado) { this.estado = estado; }
+
+   
+    public void setTareas(List<Tarea> tareas) { this.tareas = tareas; }
 
     public enum EstadoProyecto {
         ACTIVO, EN_PROGRESO, FINALIZADO

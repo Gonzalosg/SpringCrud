@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Proyectos</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-light">
+    <div th:replace="fragments/navbar.html"></div>
+
+    <div class="container mt-4">
+        <h1 class="text-center text-primary">Gestión de Proyectos</h1>
+
+        <!-- Botón para crear nuevo proyecto -->
+        <div class="text-end mb-3">
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#nuevoProyectoModal">
+                <i class="fas fa-plus"></i> Nuevo Proyecto
+            </button>
+        </div>
+
+        <!-- Lista de proyectos en tarjetas -->
+        <div class="row">
+            <div class="col-md-4 mb-4" th:each="proyecto : ${proyectos}">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary" th:text="${proyecto.nombre}"></h5>
+                        <p class="card-text text-muted" th:text="${proyecto.descripcion}"></p>
+                        <p><strong>Inicio:</strong> <span th:text="${proyecto.fechaInicio}"></span></p>
+                        <p><strong>Estado:</strong> <span class="badge bg-info" th:text="${proyecto.estado}"></span></p>
+
+                        <!-- Botones de acciones -->
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" 
+                                th:attr="data-bs-target='#editarProyectoModal-' + ${proyecto.id}">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+
+                            <!-- BOTÓN AÑADIR TAREA -->
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" 
+                                th:attr="data-bs-target='#agregarTareaModal-' + ${proyecto.id}">
+                                <i class="fas fa-tasks"></i> Añadir Tarea
+                            </button>
+
+                            <form th:action="@{/proyectos/eliminar/{id}(id=${proyecto.id})}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar este proyecto?');">
+                                    <i class="fas fa-trash"></i> Eliminar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+
+                    <!-- Mostrar tareas -->
+                    <div class="card-footer bg-light">
+                        <h6 class="text-dark">Tareas:</h6>
+                        <ul class="list-group list-group-flush">
+                            <li th:each="tarea : ${proyecto.tareas}" class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong th:text="${tarea.titulo}"></strong> 
+                                    <span class="badge bg-secondary" th:text="${tarea.estado}"></span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal" 
+                                            th:attr="data-bs-target='#editarTareaModal-' + ${tarea.id}">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                    <form th:action="@{/tareas/eliminar/{id}(id=${tarea.id})}" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar esta tarea?');">
+                                            <i class="fas fa-trash-alt"></i> Eliminar
+                                        </button>
+                                    </form>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+       <!-- MODAL PARA CREAR PROYECTO -->
+       <div class="modal fade" id="nuevoProyectoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nuevo Proyecto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form th:action="@{/proyectos/nuevo}" method="post">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" class="form-control" name="nombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Descripción</label>
+                            <input type="text" class="form-control" name="descripcion">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Fecha de Inicio</label>
+                            <input type="date" class="form-control" name="fechaInicio" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Estado</label>
+                            <select class="form-select" name="estado">
+                                <option value="ACTIVO" selected>Activo</option>
+                                <option value="EN_PROGRESO">En Progreso</option>
+                                <option value="FINALIZADO">Finalizado</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MODAL PARA AÑADIR TAREA (SIGUE AQUÍ) -->
+    <div th:each="proyecto : ${proyectos}">
+        <div class="modal fade" th:id="'agregarTareaModal-' + ${proyecto.id}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Añadir Tarea a <span th:text="${proyecto.nombre}"></span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form th:action="@{/tareas/guardar}" method="post">
+                        <div class="modal-body">
+                            <input type="hidden" name="proyectoId" th:value="${proyecto.id}">
+                            <div class="mb-3">
+                                <label class="form-label">Título</label>
+                                <input type="text" class="form-control" name="titulo" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Descripción</label>
+                                <input type="text" class="form-control" name="descripcion">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Fecha Límite</label>
+                                <input type="date" class="form-control" name="fechaLimite">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Estado</label>
+                                <select class="form-select" name="estado" required>
+                                    <option value="PENDIENTE">Pendiente</option>
+                                    <option value="EN_CURSO">En Curso</option>
+                                    <option value="COMPLETADA">Completada</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Guardar Tarea</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

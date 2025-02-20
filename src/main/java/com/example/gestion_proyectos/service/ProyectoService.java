@@ -1,12 +1,13 @@
 package com.example.gestion_proyectos.service;
 
-import com.example.gestion_proyectos.model.Proyecto;
-import com.example.gestion_proyectos.repository.ProyectoRepository;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import com.example.gestion_proyectos.model.Proyecto;
+import com.example.gestion_proyectos.repository.ProyectoRepository;
 
 @Service
 public class ProyectoService {
