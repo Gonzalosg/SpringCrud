@@ -69,4 +69,21 @@ public class HomeController {
         }
         return "redirect:/proyectos";
     }
+
+    @PostMapping("/proyectos/editar")
+public String editarProyecto(@RequestParam Long id,
+                             @RequestParam String nombre,
+                             @RequestParam String descripcion,
+                             @RequestParam String fechaInicio,
+                             @RequestParam String estado) {
+    Proyecto proyecto = proyectoRepository.findById(id).orElse(null);
+    if (proyecto != null) {
+        proyecto.setNombre(nombre);
+        proyecto.setDescripcion(descripcion);
+        proyecto.setFechaInicio(LocalDate.parse(fechaInicio));
+        proyecto.setEstado(Proyecto.EstadoProyecto.valueOf(estado));
+        proyectoRepository.save(proyecto);
+    }
+    return "redirect:/proyectos";
+}
 }

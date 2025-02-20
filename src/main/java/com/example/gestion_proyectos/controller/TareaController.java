@@ -51,4 +51,22 @@ public class TareaController {
         tareaRepository.deleteById(id);
         return "redirect:/proyectos";
     }
+
+    @PostMapping("/tareas/editar")
+public String editarTarea(@RequestParam Long id,
+                          @RequestParam String titulo,
+                          @RequestParam String descripcion,
+                          @RequestParam String fechaLimite,
+                          @RequestParam String estado) {
+    Tarea tarea = tareaRepository.findById(id).orElse(null);
+    if (tarea != null) {
+        tarea.setTitulo(titulo);
+        tarea.setDescripcion(descripcion);
+        tarea.setFechaLimite(fechaLimite.isEmpty() ? null : LocalDate.parse(fechaLimite));
+        tarea.setEstado(Tarea.EstadoTarea.valueOf(estado));
+        tareaRepository.save(tarea);
+    }
+    return "redirect:/proyectos";
+}
+
 }

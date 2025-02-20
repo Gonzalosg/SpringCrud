@@ -119,7 +119,7 @@
     </div>
 
 
-    <!-- MODAL PARA AÑADIR TAREA (SIGUE AQUÍ) -->
+    <!-- MODAL PARA AÑADIR TAREA  -->
     <div th:each="proyecto : ${proyectos}">
         <div class="modal fade" th:id="'agregarTareaModal-' + ${proyecto.id}" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog">
@@ -160,6 +160,91 @@
             </div>
         </div>
     </div>
+    <!-- MODALES PARA EDITAR PROYECTOS -->
+    <div th:each="proyecto : ${proyectos}">
+        <div class="modal fade" th:id="'editarProyectoModal-' + ${proyecto.id}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar Proyecto</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form th:action="@{/proyectos/editar}" method="post">
+                        <div class="modal-body">
+                            <input type="hidden" name="id" th:value="${proyecto.id}">
+                            <div class="mb-3">
+                                <label class="form-label">Nombre</label>
+                                <input type="text" class="form-control" name="nombre" th:value="${proyecto.nombre}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Descripción</label>
+                                <input type="text" class="form-control" name="descripcion" th:value="${proyecto.descripcion}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Fecha de Inicio</label>
+                                <input type="date" class="form-control" name="fechaInicio" th:value="${proyecto.fechaInicio}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Estado</label>
+                                <select class="form-select" name="estado">
+                                    <option value="ACTIVO" th:selected="${proyecto.estado == 'ACTIVO'}">Activo</option>
+                                    <option value="EN_PROGRESO" th:selected="${proyecto.estado == 'EN_PROGRESO'}">En Progreso</option>
+                                    <option value="FINALIZADO" th:selected="${proyecto.estado == 'FINALIZADO'}">Finalizado</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Actualizar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALES PARA EDITAR TAREAS -->
+<div th:each="proyecto : ${proyectos}">
+    <div th:each="tarea : ${proyecto.tareas}">
+        <div class="modal fade" th:id="'editarTareaModal-' + ${tarea.id}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar Tarea</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form th:action="@{/tareas/editar}" method="post">
+                        <div class="modal-body">
+                            <input type="hidden" name="id" th:value="${tarea.id}">
+                            <div class="mb-3">
+                                <label class="form-label">Título</label>
+                                <input type="text" class="form-control" name="titulo" th:value="${tarea.titulo}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Descripción</label>
+                                <input type="text" class="form-control" name="descripcion" th:value="${tarea.descripcion}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Fecha Límite</label>
+                                <input type="date" class="form-control" name="fechaLimite" th:value="${tarea.fechaLimite}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Estado</label>
+                                <select class="form-select" name="estado">
+                                    <option value="PENDIENTE" th:selected="${tarea.estado == 'PENDIENTE'}">Pendiente</option>
+                                    <option value="EN_CURSO" th:selected="${tarea.estado == 'EN_CURSO'}">En Curso</option>
+                                    <option value="COMPLETADA" th:selected="${tarea.estado == 'COMPLETADA'}">Completada</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Actualizar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
